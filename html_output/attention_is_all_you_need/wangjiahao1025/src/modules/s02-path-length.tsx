@@ -10,10 +10,10 @@ const LINE = '#d7deea';
 
 type LayerKind = 'self' | 'rnn' | 'conv';
 
-const KINDS: { id: LayerKind; label: string; steps: string; path: string; color: string }[] = [
-  { id: 'self', label: '自注意力', steps: 'O(1)', path: 'O(1)', color: GREEN },
-  { id: 'rnn', label: '循环层', steps: 'O(n)', path: 'O(n)', color: RED },
-  { id: 'conv', label: '卷积层 (k=3)', steps: 'O(1)', path: 'O(log_k n)', color: ORANGE },
+const KINDS: { id: LayerKind; label: string; parallel: string; path: string; color: string }[] = [
+  { id: 'self', label: '自注意力', parallel: 'O(n)', path: 'O(1)', color: GREEN },
+  { id: 'rnn', label: '循环层', parallel: 'O(1)', path: 'O(n)', color: RED },
+  { id: 'conv', label: '卷积层 (k=3)', parallel: 'O(n)', path: 'O(log_k n)', color: ORANGE },
 ];
 
 /** 路径长度：从第 1 位到目标位置要走几手。 */
@@ -100,8 +100,8 @@ export const PathLength = () => {
           <text x="40" y="440" fontSize="44" fill={active.color} fontWeight={700}>
             {kind === 'self' ? '1 步' : kind === 'rnn' ? `${target - 1} 步` : `${hops} 步`}
           </text>
-          <text x="380" y="382" fontSize="28" fill={INK}>顺序操作数</text>
-          <text x="380" y="440" fontSize="44" fill={active.color} fontWeight={700}>{active.steps}</text>
+          <text x="380" y="382" fontSize="28" fill={INK}>并行度</text>
+          <text x="380" y="440" fontSize="44" fill={active.color} fontWeight={700}>{active.parallel}</text>
           <text x="640" y="382" fontSize="28" fill={INK}>每层计算</text>
           <text x="640" y="440" fontSize="44" fill={MUTED} fontWeight={700}>{kind === 'self' ? 'O(n²·d)' : kind === 'rnn' ? 'O(n·d²)' : 'O(k·n·d²)'}</text>
         </svg>
@@ -125,14 +125,18 @@ export const PathLength = () => {
             }}
           >
             <strong>{k.label}</strong>
-            <div style={{ fontSize: 24, color: MUTED, marginTop: 4 }}>路径 {k.path} · 顺序 {k.steps}</div>
+            <div style={{ fontSize: 24, color: MUTED, marginTop: 4 }}>路径 {k.path} · 并行度 {k.parallel}</div>
           </button>
         ))}
         <div style={{ background: '#f7f9fc', border: `1px solid ${LINE}`, borderRadius: 16, padding: '18px 22px', flex: 1 }}>
           <div style={{ fontSize: 'var(--ppt-body-text)' }}>
             {kind === 'self' ? '任意两拍之间只隔一步，长距离依赖不必经过中间人。' : kind === 'rnn' ? '信号要走完中间每一拍，越远的依赖越难学。' : '卷积要靠堆叠扩大感受野，路径随层数增长。'}
           </div>
-          <div style={{ fontSize: 24, color: MUTED, marginTop: 10 }}>复杂度与路径长度取自原文 Table 1（page 6）。</div>
+          <div style={{ fontSize: 20, color: MUTED, marginTop: 8, lineHeight: 1.4 }}>
+            并行度＝同一时刻可同时推进的位置数。循环层逐位串行，自注意力与卷积层沿位置整体并行。
+            <br />
+            <span style={{ fontSize: 18 }}>数值取自原文 Table 1（page 6）。</span>
+          </div>
         </div>
       </div>
     </div>

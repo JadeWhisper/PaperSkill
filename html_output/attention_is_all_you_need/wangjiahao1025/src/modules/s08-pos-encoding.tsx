@@ -56,6 +56,9 @@ export const PosEncoding = () => {
 
       <div style={{ display: 'flex', gap: 16 }}>
         <div style={{ flex: 1, background: '#f7f9fc', border: `1px solid ${LINE}`, borderRadius: 16, padding: '12px 20px' }}>
+          <div style={{ fontSize: 22, color: PURPLE, fontWeight: 700, marginBottom: 4 }}>
+            位置编码 Positional Encoding · PE(pos,2i)=sin(pos/10000^(2i/d_model))，与词嵌入逐元素相加
+          </div>
           <div style={{ fontSize: 'var(--ppt-body-text)' }}>
             第 {pos} 拍：{DIMS.map((d) => `${d.label} ${pe(pos, d.i).toFixed(2)}`).join(' · ')}
           </div>
